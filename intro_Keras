@@ -1,0 +1,52 @@
+import pandas as pd 
+import numpy as np
+import keras
+#loading the dataset on the pandas data frame
+filepath = 'https://s3-api.us-geo.objectstorage.softlayer.net/cf-courses-data/CognitiveClass/DL0101EN/labs/data/concrete_data.csv'
+concrete_data = pd.read_csv(filepath)
+#getting insights about the data
+concrete_data.head()
+concrete_data.shape
+#cleaning the data
+concrete_data.shape
+concrete_data.describe()
+concrete_data.isnull().sum()
+#splitting the data into predictors and target
+concrete_data_columns = concrete_data.columns
+predictors = concrete_data[concrete_data_columns[concrete_data_columns != 'Strength']]
+target = concrete_data['Strength']
+#checking the sanity of the dataset
+predictors.head()
+target.head()
+#normalizing the data
+predictors_norm = (predictors - predictors.mean()) / predictors.std()
+predictors_norm.head()
+#saving the no of columns/features in the predictors to a variable
+n_cols = predictors_norm.shape[1]
+
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Input
+
+#defining the model and building a neural network
+def regression_model():
+    #create model
+    model = Sequential()
+    #add an input layer
+    model.add(Input(shape=(n_cols,)))
+    #add the first hidden layer
+    model.add(Dense(50, activation='relu'))
+    #add the second hidden layer
+    model.add(Dense(50, activation='relu'))
+    #add the output layer
+    model.add(Dense(1))
+    #compile the model
+    model.compile(optimizer='adam', loss='mean_squared_error')
+    return model
+
+model = regression_model()
+#fitting the data with the model
+model.fit(predictors_norm, target, validation_split=0.3, epochs=50, verbose=2)
+
+#practice question: add 5 dense layers, and 5o neurons in each layer
+#practice question2: make the validation split to 0.1
